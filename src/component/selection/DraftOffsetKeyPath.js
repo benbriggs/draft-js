@@ -7,13 +7,14 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule DraftOffsetKeyPath
+ * @format
  * @flow
  */
 
 'use strict';
 
 export type DraftOffsetKeyPath = {
-  blockKey: string;
-  decoratorKey: number;
-  leafKey: number;
+  blockKey: string,
+  decoratorKey: number,
+  leafKey: number,
 };

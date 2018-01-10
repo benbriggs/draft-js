@@ -7,12 +7,13 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule DraftRange
+ * @format
  * @flow
  */
 
 'use strict';
 
 export type DraftRange = {
-  start: number;
-  end: number;
+  start: number,
+  end: number,
 };

@@ -15,7 +15,7 @@ component itself, `Editor`. Props are defined within
 
 ### Basics
 
-See [API Basics](/draft-js/docs/quickstart-api-basics.html) for an introduction.
+See [API Basics](/docs/quickstart-api-basics.html) for an introduction.
 
 #### editorState
 ```
@@ -39,7 +39,7 @@ placeholder?: string
 Optional placeholder string to display when the editor is empty.
 
 Note: You can use CSS to style or hide your placeholder as needed. For instance,
-in the [rich editor example](https://github.com/facebook/draft-js/tree/master/examples/rich),
+in the [rich editor example](https://github.com/facebook/draft-js/tree/master/examples/draft-0-10-0/rich),
 the placeholder is hidden when the user changes block styling in an empty editor.
 This is because the placeholder may not line up with the cursor when the style
 is changed.
@@ -57,12 +57,24 @@ to fit it within your UI design.
 If this value is not set, text alignment will be based on the characters within
 the editor, on a per-block basis.
 
+#### textDirectionality
+```
+textDirectionality?: DraftTextDirectionality
+```
+Optionally set the overriding text directionality for this editor. The values
+include 'RTL' for right-to-left text, like Hebrew or Arabic, and 'LTR' for
+left-to-right text, like English or Spanish. This directionality will apply to
+the entire contents, regardless of default text direction for input text.
+
+If this value is not set, text directionality will be based on the characters
+within the editor, on a per-block basis.
+
 #### blockRendererFn
 ```
 blockRendererFn?: (block: ContentBlock) => ?Object
 ```
 Optionally set a function to define custom block rendering. See
-[Advanced Topics: Block Components](/draft-js/docs/advanced-topics-block-components.html)
+[Advanced Topics: Block Components](/docs/advanced-topics-block-components.html)
 for details on usage.
 
 #### blockStyleFn
@@ -71,7 +83,7 @@ blockStyleFn?: (block: ContentBlock) => string
 ```
 Optionally set a function to define class names to apply to the given block
 when it is rendered. See
-[Advanced Topics: Block Styling](/draft-js/docs/advanced-topics-block-styling.html)
+[Advanced Topics: Block Styling](/docs/advanced-topics-block-styling.html)
 for details on usage.
 
 #### customStyleMap
@@ -80,10 +92,44 @@ customStyleMap?: Object
 ```
 Optionally define a map of inline styles to apply to spans of text with the specified
 style. See
-[Advanced Topics: Inline Styles](/draft-js/docs/advanced-topics-inline-styles.html)
+[Advanced Topics: Inline Styles](/docs/advanced-topics-inline-styles.html)
+for details on usage.
+
+#### customStyleFn
+```
+customStyleFn?: (style: DraftInlineStyle, block: ContentBlock) => ?Object
+```
+Optionally define a function to transform inline styles to CSS objects that are applied
+to spans of text. See
+[Advanced Topics: Inline Styles](/docs/advanced-topics-inline-styles.html)
 for details on usage.
 
 ### Behavior (Optional)
+
+### autoCapitalize?: string
+
+```
+autoCapitalize?: string
+```
+
+Set if auto capitalization is turned on and how it behaves. More about platform availability and usage can [be found on mdn](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Input#attr-autocapitalize).
+
+### autoComplete?: string
+
+```
+autoComplete?: string
+```
+
+Set if auto complete is turned on and how it behaves. More about platform availability and usage can [be found on mdn](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Input#attr-autocomplete).
+
+### autoCorrect?: string
+
+```
+autoCorrect?: string
+```
+
+Set if auto correct is turned on and how it behaves. More about platform availability and usage can [be found on mdn](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Input#attr-autocorrect).
+
 
 #### readOnly
 ```
@@ -93,7 +139,7 @@ Set whether the editor should be rendered as static DOM, with all editability
 disabled.
 
 This is useful when supporting interaction within
-[custom block components](/draft-js/docs/advanced-topics-block-components.html)
+[custom block components](/docs/advanced-topics-block-components.html)
 or if you just want to display content for a static use case.
 
 Default is `false`.
@@ -128,33 +174,50 @@ Default is `false`.
 These props allow you to set accessibility properties on your editor. See
 [DraftEditorProps](https://github.com/facebook/draft-js/blob/master/src/component/base/DraftEditorProps.js) for the exhaustive list of supported attributes.
 
+#### editorKey
+```
+editorKey?: string
+```
+
+You probably won't set `editorKey` on an `<Editor />` manually unless you're
+rendering a Draft component serverside. If you _are_, you must set this prop
+to avoid server/client mismatches.
+
+If the key is not set, it is generated automatically when the component
+renders and assigned as a prop of the Editor's `<DraftEditorContents />`
+component.
+
+If you _do_ set this prop, the key should be unique _per-editor_, as it is
+used to determine if styles should be preserved when pasting text within an
+editor.
+
 ### Cancelable Handlers (Optional)
 
 These prop functions are provided to allow custom event handling for a small
-set of useful events. By returning true from your handler, you indicate that
+set of useful events. By returning `'handled'` from your handler, you indicate that
 the event is handled and the Draft core should do nothing more with it. By returning
-false, you defer to Draft to handle the event.
+`'not-handled'`, you defer to Draft to handle the event.
 
 #### handleReturn
 ```
-handleReturn?: (e: SyntheticKeyboardEvent) => boolean
+handleReturn?: (e: SyntheticKeyboardEvent, editorState: EditorState) => DraftHandleValue
 ```
 Handle a `RETURN` keydown event. Example usage: Choosing a mention tag from a
 rendered list of results to trigger applying the mention entity to your content.
 
 #### handleKeyCommand
 ```
-handleKeyCommand?: (command: string) => boolean
+handleKeyCommand?: (command: string, editorState: EditorState) => DraftHandleValue
 ```
 Handle the named editor command. See
-[Advanced Topics: Key Bindings](/draft-js/docs/advanced-topics-key-bindings.html)
+[Advanced Topics: Key Bindings](/docs/advanced-topics-key-bindings.html)
 for details on usage.
 
 #### handleBeforeInput
 ```
-handleBeforeInput?: (chars: string) => boolean
+handleBeforeInput?: (chars: string, editorState: EditorState) => DraftHandleValue
 ```
-Handle the characters to be inserted from a `beforeInput` event. Returning `true`
+Handle the characters to be inserted from a `beforeInput` event. Returning `'handled'`
 causes the default behavior of the `beforeInput` event to be prevented (i.e. it is
 the same as calling the `preventDefault` method on the event).
 Example usage: After a user has typed `- ` at the start of a new block, you might
@@ -165,25 +228,25 @@ and to convert typed emoticons into images.
 
 #### handlePastedText
 ```
-handlePastedText?: (text: string, html?: string) => boolean
+handlePastedText?: (text: string, html?: string, editorState: EditorState) => DraftHandleValue
 ```
-Handle text and html(for rich text) that has been pasted directly into the editor.
+Handle text and html(for rich text) that has been pasted directly into the editor. Returning true will prevent the default paste behavior.
 
 #### handlePastedFiles
 ```
-handlePastedFiles?: (files: Array<Blob>) => boolean
+handlePastedFiles?: (files: Array<Blob>) => DraftHandleValue
 ```
 Handle files that have been pasted directly into the editor.
 
 #### handleDroppedFiles
 ```
-handleDroppedFiles?: (selection: SelectionState, files: Array<Blob>) => boolean
+handleDroppedFiles?: (selection: SelectionState, files: Array<Blob>) => DraftHandleValue
 ```
 Handle files that have been dropped into the editor.
 
 #### handleDrop
 ```
-handleDrop?: (selection: SelectionState, dataTransfer: Object, isInternal: DraftDragType) => boolean
+handleDrop?: (selection: SelectionState, dataTransfer: Object, isInternal: DraftDragType) => DraftHandleValue
 ```
 Handle other drop operations.
 
@@ -207,11 +270,39 @@ onTab?: (e: SyntheticKeyboardEvent) => void
 onUpArrow?: (e: SyntheticKeyboardEvent) => void
 ```
 
+#### onRightArrow
+```
+onRightArrow?: (e: SyntheticKeyboardEvent) => void
+```
+
 #### onDownArrow
 ```
 onDownArrow?: (e: SyntheticKeyboardEvent) => void
 ```
+#### keyBindingFn
 
+```
+keyBindingFn?: (e: SyntheticKeyboardEvent) => void
+```
+
+This prop lets you handle key events directly and provides an opportunity to return custom editor commands. You can find a more detailed explanation of this [here](/docs/advanced-topics-key-bindings.html).
+
+#### onLeftArrow
+```
+onLeftArrow?: (e: SyntheticKeyboardEvent) => void
+```
+
+### Mouse events
+
+### onFocus
+```
+onFocus?: (e: SyntheticFocusEvent) => void
+```
+
+### onBlur
+```
+onBlur?: (e: SyntheticFocusEvent) => void
+```
 
 ## Methods
 

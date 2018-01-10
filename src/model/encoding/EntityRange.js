@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule EntityRange
+ * @format
  * @flow
  */
 
@@ -19,7 +20,7 @@
  * a `ComposedText` object, not for use with `DraftEntity.get()`.
  */
 export type EntityRange = {
-  key: number;
-  offset: number;
-  length: number;
+  key: number,
+  offset: number,
+  length: number,
 };

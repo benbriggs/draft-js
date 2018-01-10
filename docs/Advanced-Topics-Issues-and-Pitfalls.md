@@ -46,17 +46,6 @@ likely need to replicate much of the default styling.
 
 ## Known Issues
 
-### React ContentEditable Warning
-
-Within the React core, a warning is used to ward off engineers who wish to
-use ContentEditable within their components, since by default the
-browser-controlled nature of ContentEditable does not mesh with strict React
-control over the DOM. The Draft editor resolves this issue, so for our case,
-the warning is noise. You can ignore it for now.
-
-We are currently looking into removing or replacing the warning to alleviate
-the irritation it may cause: https://github.com/facebook/react/issues/6081
-
 ### Custom OSX Keybindings
 
 Because the browser has no access to OS-level custom keybindings, it is not
@@ -88,4 +77,44 @@ input methods, most significantly Korean input.
 
 ### Polyfills
 
-Some of Draft's code and that of its dependencies make use of ES2015 language features. Syntax features like `class` are compiled away via Babel, but new polyfillable APIs are left intact. One example of this is `String.prototype.startsWith`. As a result, it is expected that your browser supports these APIs, either natively or with the assistance of a polyfill. One such polyfill is [es6-shim](https://github.com/es-shims/es6-shim), which we are using in our examples.
+Some of Draft's code and that of its dependencies make use of ES2015 language
+features. Syntax features like `class` are compiled away via Babel when Draft is
+built, but it does not include polyfills for APIs now included in many modern
+browsers (for instance: `String.prototype.startsWith`). We expect your browser
+supports these APIs natively or with the assistance of a polyfill. One such
+polyfill is [es6-shim](https://github.com/es-shims/es6-shim), which we use in
+many examples but you are free to use
+[babel-polyfill](https://babeljs.io/docs/usage/polyfill/) if that's more
+your scene.
+
+When using either polyfill/shim, you should include it as early as possibly in
+your application's entrypoint (at the very minimum, before you import Draft).
+For instance, using
+[create-react-app](https://github.com/facebookincubator/create-react-app) and
+targeting ie11, `src/index.js` is probably a good spot to import your polyfill:
+
+**src/index.js**
+
+```
+import 'babel-polyfill';
+// or
+import 'es6-shim';
+
+import React from 'react';
+import ReactDOM from 'react-dom';
+import App from './App';
+import './index.css';
+
+ReactDOM.render(
+  <App />,
+  document.getElementById('root')
+);
+```
+
+### Mobile Not Yet Supported
+
+Draft.js is moving towards full mobile support, but does not officially support
+mobile browsers at this point. There are some known issues affecting Android and
+iOS - see issues tagged
+['android'](https://github.com/facebook/draft-js/labels/android) or
+['ios'](https://github.com/facebook/draft-js/labels/ios) for the current status.

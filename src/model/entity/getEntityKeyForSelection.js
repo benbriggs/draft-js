@@ -7,15 +7,14 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule getEntityKeyForSelection
- * @typechecks
+ * @format
  * @flow
  */
 
 'use strict';
 
-var DraftEntity = require('DraftEntity');
-
 import type ContentState from 'ContentState';
+import type {EntityMap} from 'EntityMap';
 import type SelectionState from 'SelectionState';
 
 /**
@@ -25,7 +24,7 @@ import type SelectionState from 'SelectionState';
  */
 function getEntityKeyForSelection(
   contentState: ContentState,
-  targetSelection: SelectionState
+  targetSelection: SelectionState,
 ): ?string {
   var entityKey;
 
@@ -34,7 +33,10 @@ function getEntityKeyForSelection(
     var offset = targetSelection.getAnchorOffset();
     if (offset > 0) {
       entityKey = contentState.getBlockForKey(key).getEntityAt(offset - 1);
-      return filterKey(entityKey);
+      if (entityKey !== contentState.getBlockForKey(key).getEntityAt(offset)) {
+        return null;
+      }
+      return filterKey(contentState.getEntityMap(), entityKey);
     }
     return null;
   }
@@ -43,22 +45,21 @@ function getEntityKeyForSelection(
   var startOffset = targetSelection.getStartOffset();
   var startBlock = contentState.getBlockForKey(startKey);
 
-  entityKey = startOffset === startBlock.getLength() ?
-    null :
-    startBlock.getEntityAt(startOffset);
+  entityKey =
+    startOffset === startBlock.getLength()
+      ? null
+      : startBlock.getEntityAt(startOffset);
 
-  return filterKey(entityKey);
+  return filterKey(contentState.getEntityMap(), entityKey);
 }
 
 /**
  * Determine whether an entity key corresponds to a `MUTABLE` entity. If so,
  * return it. If not, return null.
  */
-function filterKey(
-  entityKey: ?string
-): ?string {
+function filterKey(entityMap: EntityMap, entityKey: ?string): ?string {
   if (entityKey) {
-    var entity = DraftEntity.get(entityKey);
+    var entity = entityMap.__get(entityKey);
     return entity.getMutability() === 'MUTABLE' ? entityKey : null;
   }
   return null;

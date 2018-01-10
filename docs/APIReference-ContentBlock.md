@@ -19,7 +19,21 @@ A `ContentState` object contains an `OrderedMap` of these `ContentBlock` objects
 which together comprise the full contents of the editor.
 
 `ContentBlock` objects are largely analogous to block-level HTML elements like
-paragraphs and list items.
+paragraphs and list items. The available types are:
+
+  - unstyled
+  - paragraph
+  - header-one
+  - header-two
+  - header-three
+  - header-four
+  - header-five
+  - header-six
+  - unordered-list-item
+  - ordered-list-item
+  - blockquote
+  - code-block
+  - atomic
 
 New `ContentBlock` objects may be created directly using the constructor.
 Expected Record values are detailed below.
@@ -37,6 +51,10 @@ on the memory footprint of the editor.
 By encoding inline styles and entities together in this way, a function that
 performs edits on a `ContentBlock` can perform slices, concats, and other List
 methods on a single `List` object.
+
+When creating a new `ContentBlock` containing `text` and without `characterList`
+it then will default to a `characterList` with empty `CharacterMetadata` for the
+supplied text.
 
 ## Overview
 
@@ -84,6 +102,11 @@ methods on a single `List` object.
     </a>
   </li>
   <li>
+    <a href="#getdata">
+      <pre>getData(): Map<any, any></pre>
+    </a>
+  </li>
+  <li>
     <a href="#findstyleranges">
       <pre>findStyleRanges(filterFn: Function, callback: Function): void</pre>
     </a>
@@ -128,6 +151,11 @@ methods on a single `List` object.
       <pre>depth: number</pre>
     </a>
   </li>
+  <li>
+    <a href="#data">
+      <pre>data: Map<any, any></pre>
+    </a>
+  </li>
 </ul>
 
 ## Methods
@@ -161,7 +189,7 @@ any styling, decoration, or HTML information.
 getCharacterList(): List<CharacterMetadata>
 ```
 Returns an immutable `List` of `CharacterMetadata` objects, one for each
-character in the `ContentBlock`. (See [CharacterMetadata](/draft-js/docs/api-reference-character-metadata.html)
+character in the `ContentBlock`. (See [CharacterMetadata](/docs/api-reference-character-metadata.html)
 for details.)
 
 This `List` contains all styling and entity information for the block.
@@ -200,6 +228,13 @@ getEntityAt(offset: number): ?string
 ```
 Returns the entity key value (or `null` if none) at a given offset within this
 `ContentBlock`.
+
+### getData()
+
+```
+getData(): Map<any, any>
+```
+Returns block-level metadata.
 
 ### findStyleRanges()
 
@@ -244,3 +279,6 @@ See `getCharacterList()`.
 
 ### depth
 See `getDepth()`.
+
+### data
+See `getData()`.

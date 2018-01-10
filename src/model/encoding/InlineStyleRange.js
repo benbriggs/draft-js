@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule InlineStyleRange
+ * @format
  * @flow
  */
 
@@ -16,7 +17,7 @@
  * A plain object representation of an inline style range.
  */
 export type InlineStyleRange = {
-  style: string;
-  offset: number;
-  length: number;
+  style: string,
+  offset: number,
+  length: number,
 };

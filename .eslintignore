@@ -1,6 +1,10 @@
 lib/
 dist/
 docs/
-examples/
 node_modules/
 website/
+gulpfile.js
+scripts/module-map.js
+scripts/jest/preprocessor.js
+examples/draft-0-10-0/universal/static/bundle.js
+examples/draft-0-9-1/universal/static/bundle.js

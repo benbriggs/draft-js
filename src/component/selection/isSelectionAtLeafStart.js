@@ -7,7 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule isSelectionAtLeafStart
- * @typechecks
+ * @format
  * @flow
  */
 
@@ -36,9 +36,8 @@ function isSelectionAtLeafStart(editorState: EditorState): boolean {
           isAtStart = true;
           return true;
         }
-        if (offset < leafStart) {
-          return false;
-        }
+
+        return false;
       });
     }
 

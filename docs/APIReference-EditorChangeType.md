@@ -38,6 +38,10 @@ An entity is being applied (or removed via `null`) to one or more characters.
 
 A single character is being backward-removed.
 
+#### `change-block-data`
+
+The `data` value of one or more `ContentBlock` objects is being changed.
+
 #### `change-block-type`
 
 The `type` value of one or more `ContentBlock` objects is being changed.
@@ -45,6 +49,10 @@ The `type` value of one or more `ContentBlock` objects is being changed.
 #### `change-inline-style`
 
 An inline style is being applied or removed for one or more characters.
+
+#### `move-block`
+
+A block is being moved within the [BlockMap](https://github.com/facebook/draft-js/blob/master/src/model/immutable/BlockMap.js).
 
 #### `delete-character`
 
@@ -57,7 +65,7 @@ One or more characters is being inserted at a selection state.
 #### `insert-fragment`
 
 A "fragment" of content (i.e. a
-[BlockMap](https://github.com/facebook/draft-js/blob/master/src/model/immutable/BlockMap.js)
+[BlockMap](https://github.com/facebook/draft-js/blob/master/src/model/immutable/BlockMap.js))
 is being inserted at a selection state.
 
 #### `redo`

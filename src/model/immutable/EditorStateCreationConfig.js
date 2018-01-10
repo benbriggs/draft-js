@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule EditorStateCreationConfig
+ * @format
  * @flow
  */
 
@@ -17,8 +18,8 @@ import type {DraftDecoratorType} from 'DraftDecoratorType';
 import type SelectionState from 'SelectionState';
 
 export type EditorStateCreationConfig = {
-  allowUndo: boolean;
-  currentContent: ContentState;
-  decorator: ?DraftDecoratorType;
-  selection: SelectionState;
+  allowUndo: boolean,
+  currentContent: ContentState,
+  decorator: ?DraftDecoratorType,
+  selection: SelectionState,
 };

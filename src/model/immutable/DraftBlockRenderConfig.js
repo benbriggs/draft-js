@@ -7,14 +7,14 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule DraftBlockRenderConfig
+ * @format
  * @flow
  */
 
 'use strict';
 
-import type React from 'react';
-
 export type DraftBlockRenderConfig = {
-  element: string;
-  wrapper?: React.Element;
+  element: string,
+  wrapper?: React$Element<any>,
+  aliasedElements?: Array<string>,
 };

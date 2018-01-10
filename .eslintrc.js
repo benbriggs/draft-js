@@ -8,16 +8,25 @@
  */
 
 module.exports = {
-  parser: 'babel-eslint',
-
-  extends: './node_modules/fbjs-scripts/eslint/.eslintrc.js',
-
-  plugins: [
-    'react',
+  extends: [
+    'fbjs',
+    'prettier',
+    'prettier/flowtype',
+    'prettier/react',
+    'prettier/standard',
   ],
-
   rules: {
-    'react/jsx-uses-react': 1,
-    'react/react-in-jsx-scope': 1,
+    'prettier/prettier': ['error', 'fb'],
   },
+  plugins: ['prettier'],
+  overrides: [
+    {
+      files: ['examples/draft-0-10-0/**', 'examples/draft-0-9-1/**'],
+      rules: {
+        'prettier/prettier': 0,
+        'jsx-a11y/no-static-element-interactions': 0,
+        'no-console': 0,
+      },
+    },
+  ],
 };

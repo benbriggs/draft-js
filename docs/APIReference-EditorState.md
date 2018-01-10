@@ -107,7 +107,12 @@ The list below includes the most commonly used instance methods for `EditorState
   </li>
   <li>
     <a href="#setinlinestyleoverride">
-      <pre>static setInlineStyleOverride(inlineStyleOverride): EditorState</pre>
+      <pre>static setInlineStyleOverride(editorState, inlineStyleOverride): EditorState</pre>
+    </a>
+  </li>
+  <li>
+    <a href="#set">
+      <pre>static set(editorState, EditorStateRecordType): EditorState</pre>
     </a>
   </li>
 </ul>
@@ -267,8 +272,7 @@ static push(
 ```
 Returns a new `EditorState` object with the specified `ContentState` applied
 as the new `currentContent`. Based on the `changeType`, this `ContentState`
-may be regarded as a boundary state for undo/redo behavior. See
-[Undo/Redo](/draft-js/docs/advanced-undo-redo.html) discussion for details.
+may be regarded as a boundary state for undo/redo behavior.
 
 All content changes must be applied to the EditorState with this method.
 
@@ -344,10 +348,18 @@ and it makes sense to allow the user to continue working seamlessly.
 ### setInlineStyleOverride
 
 ```
-static setInlineStyleOverride(inlineStyleOverride: DraftInlineStyle): EditorState
+static setInlineStyleOverride(editorState: EditorState, inlineStyleOverride: DraftInlineStyle): EditorState
 ```
 Returns a new `EditorState` object with the specified `DraftInlineStyle` applied
 as the set of inline styles to be applied to the next inserted characters.
+
+### set
+
+```
+static set(editorState: EditorState, options: EditorStateRecordType): EditorState
+```
+Returns a new `EditorState` object with new options passed in. 'The method is
+inherited from the Immutable `record` API.
 
 ## Properties and Getters
 

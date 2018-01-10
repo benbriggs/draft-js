@@ -7,46 +7,56 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule ContentBlock
- * @typechecks
+ * @format
  * @flow
  */
 
 'use strict';
 
-var Immutable = require('immutable');
-
-var findRangesImmutable = require('findRangesImmutable');
-
-import type CharacterMetadata from 'CharacterMetadata';
+import type {BlockNode, BlockNodeConfig, BlockNodeKey} from 'BlockNode';
 import type {DraftBlockType} from 'DraftBlockType';
 import type {DraftInlineStyle} from 'DraftInlineStyle';
 
-var {
-  List,
-  OrderedSet,
-  Record,
-} = Immutable;
+const CharacterMetadata = require('CharacterMetadata');
+const Immutable = require('immutable');
+
+const findRangesImmutable = require('findRangesImmutable');
+
+const {List, Map, OrderedSet, Record, Repeat} = Immutable;
 
 const EMPTY_SET = OrderedSet();
 
-var defaultRecord: {
-  key: string;
-  type: DraftBlockType;
-  text: string;
-  characterList: List<CharacterMetadata>;
-  depth: number;
-} = {
+const defaultRecord: BlockNodeConfig = {
   key: '',
   type: 'unstyled',
   text: '',
   characterList: List(),
   depth: 0,
+  data: Map(),
 };
 
-var ContentBlockRecord = Record(defaultRecord);
+const ContentBlockRecord = Record(defaultRecord);
 
-class ContentBlock extends ContentBlockRecord {
-  getKey(): string {
+const decorateCharacterList = (config: BlockNodeConfig): BlockNodeConfig => {
+  if (!config) {
+    return config;
+  }
+
+  const {characterList, text} = config;
+
+  if (text && !characterList) {
+    config.characterList = List(Repeat(CharacterMetadata.EMPTY, text.length));
+  }
+
+  return config;
+};
+
+class ContentBlock extends ContentBlockRecord implements BlockNode {
+  constructor(config: BlockNodeConfig) {
+    super(decorateCharacterList(config));
+  }
+
+  getKey(): BlockNodeKey {
     return this.get('key');
   }
 
@@ -70,6 +80,10 @@ class ContentBlock extends ContentBlockRecord {
     return this.get('depth');
   }
 
+  getData(): Map<any, any> {
+    return this.get('data');
+  }
+
   getInlineStyleAt(offset: number): DraftInlineStyle {
     var character = this.getCharacterList().get(offset);
     return character ? character.getStyle() : EMPTY_SET;
@@ -85,13 +99,13 @@ class ContentBlock extends ContentBlockRecord {
    */
   findStyleRanges(
     filterFn: (value: CharacterMetadata) => boolean,
-    callback: (start: number, end: number) => void
+    callback: (start: number, end: number) => void,
   ): void {
     findRangesImmutable(
       this.getCharacterList(),
       haveEqualStyle,
       filterFn,
-      callback
+      callback,
     );
   }
 
@@ -100,27 +114,27 @@ class ContentBlock extends ContentBlockRecord {
    */
   findEntityRanges(
     filterFn: (value: CharacterMetadata) => boolean,
-    callback: (start: number, end: number) => void
+    callback: (start: number, end: number) => void,
   ): void {
     findRangesImmutable(
       this.getCharacterList(),
       haveEqualEntity,
       filterFn,
-      callback
+      callback,
     );
   }
 }
 
 function haveEqualStyle(
   charA: CharacterMetadata,
-  charB: CharacterMetadata
+  charB: CharacterMetadata,
 ): boolean {
   return charA.getStyle() === charB.getStyle();
 }
 
 function haveEqualEntity(
   charA: CharacterMetadata,
-  charB: CharacterMetadata
+  charB: CharacterMetadata,
 ): boolean {
   return charA.getEntity() === charB.getEntity();
 }

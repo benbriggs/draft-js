@@ -7,34 +7,36 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule removeEntitiesAtEdges
+ * @format
  * @flow
  */
 
 'use strict';
 
+import type {BlockNodeRecord} from 'BlockNodeRecord';
+import type ContentState from 'ContentState';
+import type {EntityMap} from 'EntityMap';
+import type SelectionState from 'SelectionState';
+import type {List} from 'immutable';
+
 var CharacterMetadata = require('CharacterMetadata');
-var DraftEntity = require('DraftEntity');
 
 var findRangesImmutable = require('findRangesImmutable');
 var invariant = require('invariant');
 
-import type ContentBlock from 'ContentBlock';
-import type ContentState from 'ContentState';
-import type {List} from 'immutable';
-import type SelectionState from 'SelectionState';
-
 function removeEntitiesAtEdges(
   contentState: ContentState,
-  selectionState: SelectionState
+  selectionState: SelectionState,
 ): ContentState {
   var blockMap = contentState.getBlockMap();
+  var entityMap = contentState.getEntityMap();
 
   var updatedBlocks = {};
 
   var startKey = selectionState.getStartKey();
   var startOffset = selectionState.getStartOffset();
   var startBlock = blockMap.get(startKey);
-  var updatedStart = removeForBlock(startBlock, startOffset);
+  var updatedStart = removeForBlock(entityMap, startBlock, startOffset);
 
   if (updatedStart !== startBlock) {
     updatedBlocks[startKey] = updatedStart;
@@ -47,7 +49,7 @@ function removeEntitiesAtEdges(
     endBlock = updatedStart;
   }
 
-  var updatedEnd = removeForBlock(endBlock, endOffset);
+  var updatedEnd = removeForBlock(entityMap, endBlock, endOffset);
 
   if (updatedEnd !== endBlock) {
     updatedBlocks[endKey] = updatedEnd;
@@ -66,7 +68,7 @@ function removeEntitiesAtEdges(
 function getRemovalRange(
   characters: List<CharacterMetadata>,
   key: ?string,
-  offset: number
+  offset: number,
 ): Object {
   var removalRange;
   findRangesImmutable(
@@ -77,19 +79,20 @@ function getRemovalRange(
       if (start <= offset && end >= offset) {
         removalRange = {start, end};
       }
-    }
+    },
   );
   invariant(
     typeof removalRange === 'object',
-    'Removal range must exist within character list.'
+    'Removal range must exist within character list.',
   );
   return removalRange;
 }
 
 function removeForBlock(
-  block: ContentBlock,
-  offset: number
-): ContentBlock {
+  entityMap: EntityMap,
+  block: BlockNodeRecord,
+  offset: number,
+): BlockNodeRecord {
   var chars = block.getCharacterList();
   var charBefore = offset > 0 ? chars.get(offset - 1) : undefined;
   var charAfter = offset < chars.count() ? chars.get(offset) : undefined;
@@ -97,7 +100,7 @@ function removeForBlock(
   var entityAfterCursor = charAfter ? charAfter.getEntity() : undefined;
 
   if (entityAfterCursor && entityAfterCursor === entityBeforeCursor) {
-    var entity = DraftEntity.get(entityAfterCursor);
+    var entity = entityMap.__get(entityAfterCursor);
     if (entity.getMutability() !== 'MUTABLE') {
       var {start, end} = getRemovalRange(chars, entityAfterCursor, offset);
       var current;

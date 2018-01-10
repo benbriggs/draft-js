@@ -7,33 +7,31 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule BlockTree
+ * @format
  * @flow
  */
 
 'use strict';
+
+import type {BlockNodeRecord} from 'BlockNodeRecord';
+import type CharacterMetadata from 'CharacterMetadata';
+import type ContentState from 'ContentState';
+import type {DraftDecoratorType} from 'DraftDecoratorType';
 
 var Immutable = require('immutable');
 
 var emptyFunction = require('emptyFunction');
 var findRangesImmutable = require('findRangesImmutable');
 
-import type CharacterMetadata from 'CharacterMetadata';
-import type ContentBlock from 'ContentBlock';
-import type {DraftDecoratorType} from 'DraftDecoratorType';
-
-var {
-  List,
-  Repeat,
-  Record,
-} = Immutable;
+var {List, Repeat, Record} = Immutable;
 
 var returnTrue = emptyFunction.thatReturnsTrue;
 
 var FINGERPRINT_DELIMITER = '-';
 
 var defaultLeafRange: {
-  start: ?number;
-  end: ?number;
+  start: ?number,
+  end: ?number,
 } = {
   start: null,
   end: null,
@@ -42,10 +40,10 @@ var defaultLeafRange: {
 var LeafRange = Record(defaultLeafRange);
 
 var defaultDecoratorRange: {
-  start: ?number;
-  end: ?number;
-  decoratorKey: ?string;
-  leaves: ?List<LeafRange>;
+  start: ?number,
+  end: ?number,
+  decoratorKey: ?string,
+  leaves: ?List<LeafRange>,
 } = {
   start: null,
   end: null,
@@ -60,8 +58,9 @@ var BlockTree = {
    * Generate a block tree for a given ContentBlock/decorator pair.
    */
   generate: function(
-    block: ContentBlock,
-    decorator: ?DraftDecoratorType
+    contentState: ContentState,
+    block: BlockNodeRecord,
+    decorator: ?DraftDecoratorType,
   ): List<DecoratorRange> {
     var textLength = block.getLength();
     if (!textLength) {
@@ -70,38 +69,28 @@ var BlockTree = {
           start: 0,
           end: 0,
           decoratorKey: null,
-          leaves: List.of(
-            new LeafRange({start: 0, end: 0})
-          ),
-        })
+          leaves: List.of(new LeafRange({start: 0, end: 0})),
+        }),
       );
     }
 
     var leafSets = [];
-    var decorations = decorator ?
-      decorator.getDecorations(block) :
-      List(Repeat(null, textLength));
+    var decorations = decorator
+      ? decorator.getDecorations(block, contentState)
+      : List(Repeat(null, textLength));
 
     var chars = block.getCharacterList();
 
-    findRangesImmutable(
-      decorations,
-      areEqual,
-      returnTrue,
-      (start, end) => {
-        leafSets.push(
-          new DecoratorRange({
-            start,
-            end,
-            decoratorKey: decorations.get(start),
-            leaves: generateLeaves(
-              chars.slice(start, end).toList(),
-              start
-            ),
-          })
-        );
-      }
-    );
+    findRangesImmutable(decorations, areEqual, returnTrue, (start, end) => {
+      leafSets.push(
+        new DecoratorRange({
+          start,
+          end,
+          decoratorKey: decorations.get(start),
+          leaves: generateLeaves(chars.slice(start, end).toList(), start),
+        }),
+      );
+    });
 
     return List(leafSets);
   },
@@ -112,15 +101,16 @@ var BlockTree = {
    * structural change.
    */
   getFingerprint: function(tree: List<DecoratorRange>): string {
-    return tree.map(
-      leafSet => {
+    return tree
+      .map(leafSet => {
         var decoratorKey = leafSet.get('decoratorKey');
-        var fingerprintString = decoratorKey !== null ?
-          decoratorKey + '.' + (leafSet.get('end') - leafSet.get('start')) :
-          '';
+        var fingerprintString =
+          decoratorKey !== null
+            ? decoratorKey + '.' + (leafSet.get('end') - leafSet.get('start'))
+            : '';
         return '' + fingerprintString + '.' + leafSet.get('leaves').size;
-      }
-    ).join(FINGERPRINT_DELIMITER);
+      })
+      .join(FINGERPRINT_DELIMITER);
   },
 };
 
@@ -129,23 +119,18 @@ var BlockTree = {
  */
 function generateLeaves(
   characters: List<CharacterMetadata>,
-  offset: number
+  offset: number,
 ): List<LeafRange> {
   var leaves = [];
   var inlineStyles = characters.map(c => c.getStyle()).toList();
-  findRangesImmutable(
-    inlineStyles,
-    areEqual,
-    returnTrue,
-    (start, end) => {
-      leaves.push(
-        new LeafRange({
-          start: start + offset,
-          end: end + offset,
-        })
-      );
-    }
-  );
+  findRangesImmutable(inlineStyles, areEqual, returnTrue, (start, end) => {
+    leaves.push(
+      new LeafRange({
+        start: start + offset,
+        end: end + offset,
+      }),
+    );
+  });
   return List(leaves);
 }
 

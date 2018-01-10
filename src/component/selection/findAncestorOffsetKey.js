@@ -7,7 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule findAncestorOffsetKey
- * @typechecks
+ * @format
  * @flow
  */
 
@@ -19,12 +19,13 @@ var getSelectionOffsetKeyForNode = require('getSelectionOffsetKeyForNode');
  * Get the key from the node's nearest offset-aware ancestor.
  */
 function findAncestorOffsetKey(node: Node): ?string {
-  while (node && node !== document.documentElement) {
-    var key = getSelectionOffsetKeyForNode(node);
+  let searchNode = node;
+  while (searchNode && searchNode !== document.documentElement) {
+    var key = getSelectionOffsetKeyForNode(searchNode);
     if (key != null) {
       return key;
     }
-    node = node.parentNode;
+    searchNode = searchNode.parentNode;
   }
   return null;
 }

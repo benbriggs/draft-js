@@ -7,24 +7,28 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule getFragmentFromSelection
+ * @format
  * @flow
  */
 
 'use strict';
 
-var getContentStateFragment = require('getContentStateFragment');
-
 import type {BlockMap} from 'BlockMap';
 import type EditorState from 'EditorState';
 
+var getContentStateFragment = require('getContentStateFragment');
+
 function getFragmentFromSelection(editorState: EditorState): ?BlockMap {
   var selectionState = editorState.getSelection();
-  if (!selectionState.isCollapsed()) {
-    return getContentStateFragment(
-      editorState.getCurrentContent(),
-      selectionState
-    );
+
+  if (selectionState.isCollapsed()) {
+    return null;
   }
+
+  return getContentStateFragment(
+    editorState.getCurrentContent(),
+    selectionState,
+  );
 }
 
 module.exports = getFragmentFromSelection;

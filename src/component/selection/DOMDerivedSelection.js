@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule DOMDerivedSelection
+ * @format
  * @flow
  */
 
@@ -15,6 +16,6 @@
 import type SelectionState from 'SelectionState';
 
 export type DOMDerivedSelection = {
-  selectionState: SelectionState;
-  needsRecovery: boolean;
+  selectionState: SelectionState,
+  needsRecovery: boolean,
 };

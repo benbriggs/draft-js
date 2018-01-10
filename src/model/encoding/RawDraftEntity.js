@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule RawDraftEntity
+ * @format
  * @flow
  */
 
@@ -19,7 +20,7 @@ import type {DraftEntityType} from 'DraftEntityType';
  * A plain object representation of an EntityInstance.
  */
 export type RawDraftEntity = {
-  type: DraftEntityType;
-  mutability: DraftEntityMutability;
-  data: ?{[key: string]: any};
+  type: DraftEntityType,
+  mutability: DraftEntityMutability,
+  data: ?{[key: string]: any},
 };
